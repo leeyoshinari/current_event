@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>时事·热点</title>
+		<link rel="stylesheet" type="text/css" href="..{{ context }}/static/css/index.css">
+	</head>
+	<body>
+        <div>
+            <select id="type" style="width: 200px; height: 35px;">
+                {% if type %}
+                    <option value="">所有</option>
+                {% else %}
+                    <option value="" selected>所有</option>
+                {% endif %}
+                {% for k, v in selector.items() %}
+                    {% if k == type %}
+                        <option value="{{ k }}" selected>{{ v }}</option>
+                    {% else %}
+                        <option value="{{ k }}">{{ v }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <header>
+            <h2></h2>
+        </header>
+		<ul class="timeline">
+            {% for s in results %}
+            <li>
+                <div class="direction-l">
+                    <div class="flag-wrapper">
+                        <span class="hexa"></span>
+                        <span class="time-wrapper">
+                            <span class="time" style="color: black;">{{ s[4] | replace(' 00:00:00', '') }}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="direction-r">
+                    <div class="desc" title="{{ s[3] }}">{{ s[2] }}</div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="pages">
+            {% if total > page * 20 %}
+                <button class="paging" style="margin-right: 20%; margin-left: 1%;" onclick="to_page('{{ page }}', 1)">下一页 >></button>
+            {% endif %}
+            {% if total > 20 and page > 1 %}
+                {% if total > page * 20 %}
+                    <button class="paging" style="margin-right: 2%; margin-left: 1%;" onclick="to_page('{{ page }}', -1)"><< 上一页</button>
+                {% else %}
+                    <button class="paging" style="margin-right: 20%; margin-left: 1%;" onclick="to_page('{{ page }}', -1)"><< 上一页</button>
+                {% endif %}
+            {% endif %}
+            <div style="float: right; margin-top: 6px;"><span>总共 {{ total }} 条，当前是第 {{ page }} 页</span></div>
+        </div>
+	</body>
+    <script type="text/javascript">
+        let timeline_desc = document.getElementsByClassName('desc');for(let i=0; i<timeline_desc.length; i++) {timeline_desc[i].onclick = function () {window.location.href = timeline_desc[i].title;}}
+        document.getElementById('type').onchange = function () {let types = document.getElementById('type').value;if (types) {window.location.href = '{{ context }}?type=' + types;} else {window.location.href = '{{ context }}';}}
+        function to_page(page, plus) {page = page * 1 + plus;let types = document.getElementById('type').value;if (types) {window.location.href = '{{ context }}?type=' + types + '&page=' + page;} else {window.location.href = '{{ context }}?page=' + page;}}
+    </script>
+</html>

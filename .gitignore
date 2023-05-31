@@ -142,13 +142,15 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+index.css.backup
+test.py
 
 # Pyre type checker
 .pyre/
 
 # pytype static type analyzer
 .pytype/
-
+.idea/
 # Cython debug symbols
 cython_debug/
 
