@@ -31,7 +31,7 @@
                     <div class="flag-wrapper">
                         <span class="hexa"></span>
                         <span class="time-wrapper">
-                            <span class="time" style="color: black;">{{ s[4] | replace(' 00:00:00', '') }}</span>
+                            <span class="time">{{ s[4] | replace(' 00:00:00', '') }}</span>
                         </span>
                     </div>
                 </div>
@@ -42,11 +42,11 @@
             {% endfor %}
         </ul>
         <div class="pages">
-            {% if total > page * 20 %}
+            {% if total > page * 15 %}
                 <button class="paging" style="margin-right: 20%; margin-left: 1%;" onclick="to_page('{{ page }}', 1)">下一页 >></button>
             {% endif %}
-            {% if total > 20 and page > 1 %}
-                {% if total > page * 20 %}
+            {% if total > 15 and page > 1 %}
+                {% if total > page * 15 %}
                     <button class="paging" style="margin-right: 2%; margin-left: 1%;" onclick="to_page('{{ page }}', -1)"><< 上一页</button>
                 {% else %}
                     <button class="paging" style="margin-right: 20%; margin-left: 1%;" onclick="to_page('{{ page }}', -1)"><< 上一页</button>
@@ -54,6 +54,7 @@
             {% endif %}
             <div style="float: right; margin-top: 6px;"><span>总共 {{ total }} 条，当前是第 {{ page }} 页</span></div>
         </div>
+        <div style="height: 96px;"></div>
 	</body>
     <script type="text/javascript">
         let timeline_desc = document.getElementsByClassName('desc');for(let i=0; i<timeline_desc.length; i++) {timeline_desc[i].onclick = function () {window.location.href = timeline_desc[i].title;}}

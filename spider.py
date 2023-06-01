@@ -6,8 +6,9 @@ import time
 import traceback
 import requests
 from bs4 import BeautifulSoup
+from pymysql.err import IntegrityError
 from config import urls
-from dataBase import insert_data, create_table
+from dataBase import insert_data
 from logger import logger
 
 header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.57"}
@@ -37,6 +38,9 @@ def get_ren_min(cursor, con, data):
             try:
                 insert_data(cursor, con, data)
                 logger.info(f"写入成功，{data}")
+            except IntegrityError:
+                logger.warning(f"重复数据，{data}")
+                break
             except:
                 logger.error(f"写入失败，{data}")
                 logger.error(traceback.format_exc())
@@ -62,6 +66,9 @@ def get_ban_yue_tan(cursor, con, data):
             try:
                 insert_data(cursor, con, data)
                 logger.info(f"写入成功，{data}")
+            except IntegrityError:
+                logger.warning(f"重复数据，{data}")
+                break
             except:
                 logger.error(f"写入失败，{data}")
                 logger.error(traceback.format_exc())
@@ -70,13 +77,16 @@ def get_ban_yue_tan(cursor, con, data):
         logger.error(traceback.format_exc())
 
 def run_spider(cursor, con):
-    for k, v in urls.items():
-        if k == "ren_min_ri_bao":
-            for d in v:
-                get_ren_min(cursor, con, d)
-        if k == "ban_yue_tan":
-            for d in v:
-                get_ban_yue_tan(cursor, con, d)
+    while True:
+        if time.strftime("%M") == "20":
+            for k, v in urls.items():
+                if k == "ren_min_ri_bao":
+                    for d in v:
+                        get_ren_min(cursor, con, d)
+                if k == "ban_yue_tan":
+                    for d in v:
+                        get_ban_yue_tan(cursor, con, d)
+        time.sleep(30)
 
 if __name__ == "__main__":
     pass
