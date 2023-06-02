@@ -51,6 +51,7 @@ def get_ren_min(cursor, con, data):
 def get_ban_yue_tan(cursor, con, data):
     try:
         res = requests.get(data['url'], headers=header)
+        res.encoding = res.apparent_encoding
         soup = BeautifulSoup(res.text, features="lxml")
         mt30 = soup.select(data['selector'])
         bty_tbtj_list = mt30[0].select(".bty_tbtj_list")
@@ -119,6 +120,9 @@ def run_spider(cursor, con):
                 if k == "ban_yue_tan":
                     for d in v:
                         get_ban_yue_tan(cursor, con, d)
+                if k == "hu_bei_ri_bao":
+                    for d in v:
+                        get_hu_bei_ri_bao(cursor, con, d)
         time.sleep(30)
 
 if __name__ == "__main__":
