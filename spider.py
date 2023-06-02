@@ -34,15 +34,15 @@ def get_ren_min(cursor, con, data):
                 public_time = public_time.replace('年', '-').replace('月', '-')
             else:
                 public_time = year + public_time.replace('月', '-')
-            data = {"title": title, "url": href, "public_time": public_time, "type": data['type']}
+            data_in = {"title": title, "url": href, "public_time": public_time, "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
             try:
-                insert_data(cursor, con, data)
-                logger.info(f"写入成功，{data}")
+                insert_data(cursor, con, data_in)
+                logger.info(f"写入成功，{data_in}")
             except IntegrityError:
-                logger.warning(f"重复数据，{data}")
+                logger.warning(f"重复数据，{data_in}")
                 break
             except:
-                logger.error(f"写入失败，{data}")
+                logger.error(f"写入失败，{data_in}")
                 logger.error(traceback.format_exc())
                 break
     except:
@@ -50,7 +50,7 @@ def get_ren_min(cursor, con, data):
 
 def get_ban_yue_tan(cursor, con, data):
     try:
-        res = requests.get(data['url'])
+        res = requests.get(data['url'], headers=header)
         soup = BeautifulSoup(res.text, features="lxml")
         mt30 = soup.select(data['selector'])
         bty_tbtj_list = mt30[0].select(".bty_tbtj_list")
@@ -62,19 +62,52 @@ def get_ban_yue_tan(cursor, con, data):
             title = a[0].text
             span = r.select("span")
             public_time = span[0].text
-            data = {"title": title, "url": href, "public_time": public_time, "type": data['type']}
+            data_in = {"title": title, "url": href, "public_time": public_time, "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
             try:
-                insert_data(cursor, con, data)
-                logger.info(f"写入成功，{data}")
+                insert_data(cursor, con, data_in)
+                logger.info(f"写入成功，{data_in}")
             except IntegrityError:
-                logger.warning(f"重复数据，{data}")
+                logger.warning(f"重复数据，{data_in}")
                 break
             except:
-                logger.error(f"写入失败，{data}")
+                logger.error(f"写入失败，{data_in}")
                 logger.error(traceback.format_exc())
                 break
     except:
         logger.error(traceback.format_exc())
+
+def get_hu_bei_ri_bao(cursor, con, data):
+    try:
+        res = requests.get(data['url'].format(time.strftime("%Y%m/%d"), 'node_01.html'), headers=header)
+        res.encoding = res.apparent_encoding
+        soup = BeautifulSoup(res.text, features="lxml")
+        selector = soup.select(data['selector'])
+        rows = selector[0].select("li")
+        target_url = [r.select("a")[0].attrs['href'] for r in rows if r.text.strip().endswith("评论") or r.text.strip().endswith("武汉观察")]
+        for r in target_url:
+            res = requests.get(data['url'].format(time.strftime("%Y%m/%d"), r), headers=header)
+            res.encoding = res.apparent_encoding
+            soup = BeautifulSoup(res.text, features="lxml")
+            selector = soup.select(".resultList")
+            for rr in selector:
+                a = rr.select("a")
+                href = "https://epaper.hubeidaily.net/pc/" + a[0].attrs['href'].replace("../","")
+                title = a[0].text.strip()
+                public_time = time.strftime("%Y-%m-%d")
+                data_in = {"title": title, "url": href, "public_time": public_time, "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
+                try:
+                    insert_data(cursor, con, data_in)
+                    logger.info(f"写入成功，{data_in}")
+                except IntegrityError:
+                    logger.warning(f"重复数据，{data_in}")
+                    break
+                except:
+                    logger.error(f"写入失败，{data_in}")
+                    logger.error(traceback.format_exc())
+                    break
+    except:
+        logger.error(traceback.format_exc())
+
 
 def run_spider(cursor, con):
     while True:

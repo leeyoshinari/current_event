@@ -14,6 +14,9 @@ urls = {
     "ban_yue_tan": [
         {"type": "ban_yue_tan_ping_lun", "selector": ".mt30", "desc": "半月谈评论", "url": "http://www.banyuetan.org/byt/banyuetanpinglun/index.html"},
         {"type": "ban_yue_tan_jin_ri_tan", "selector": ".mt30", "desc": "半月谈今日谈", "url": "http://www.banyuetan.org/byt/jinritan/index.html"}
+    ],
+    "hu_bei_ri_bao": [
+        {"type": "hu_bei_ri_bao", "selector": ".nav-list", "desc": "湖北日报", "url": "https://epaper.hubeidaily.net/pc/column/{}/{}"}
     ]
 }
 
@@ -22,5 +25,6 @@ selector = {"ren_min_shi_ping": "人民日报-人民时评",
             "ren_min_lai_lun": "人民日报-人民来论",
             "ren_min_zhong_heng": "人民日报-人民纵横",
             "ban_yue_tan_ping_lun": "半月谈-评论",
-            "ban_yue_tan_jin_ri_tan": "半月谈-今日谈"
+            "ban_yue_tan_jin_ri_tan": "半月谈-今日谈",
+            "hu_bei_ri_bao": "湖北日报"
             }

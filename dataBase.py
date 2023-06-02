@@ -10,12 +10,13 @@ CREATE TABLE IF NOT EXISTS `current_event` (
     `title` VARCHAR(64) NOT NULL,
     `url` VARCHAR(256) NOT NULL,
     `public_time` DATETIME NOT NULL,
+    `create_time` DATETIME,
     PRIMARY KEY (`id`),
     INDEX (`public_time`)
 );
 """
 
-INSERT_INTO = """INSERT INTO current_event (id, type, title, url, public_time) VALUES ('{}', '{}', '{}', '{}', '{}');"""
+INSERT_INTO = """INSERT INTO current_event (id, type, title, url, public_time, create_time) VALUES ('{}', '{}', '{}', '{}', '{}', '{}');"""
 SELECT_ALL = """SELECT id, type, title, url, public_time FROM current_event ORDER BY public_time DESC LIMIT {} OFFSET {};"""
 SELECT_BY = """SELECT id, type, title, url, public_time FROM current_event WHERE type = '{}' ORDER BY public_time DESC LIMIT {} OFFSET {};"""
 COUNT_ALL = """SELECT COUNT(1) FROM current_event;"""
@@ -42,7 +43,7 @@ def query_data(cursor, data):
 
 def insert_data(cursor, con, data):
     try:
-        cursor.execute(INSERT_INTO.format(count_md5(data['url']), data['type'], data['title'], data['url'], data['public_time']))
+        cursor.execute(INSERT_INTO.format(count_md5(data['url']), data['type'], data['title'], data['url'], data['public_time'], data['create_time']))
         con.commit()
     except:
         raise
