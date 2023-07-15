@@ -17,10 +17,11 @@ CREATE TABLE IF NOT EXISTS `current_event` (
 """
 
 INSERT_INTO = """INSERT INTO current_event (id, type, title, url, public_time, create_time) VALUES ('{}', '{}', '{}', '{}', '{}', '{}');"""
-SELECT_ALL = """SELECT id, type, title, url, public_time FROM current_event ORDER BY public_time DESC LIMIT {} OFFSET {};"""
-SELECT_BY = """SELECT id, type, title, url, public_time FROM current_event WHERE type = '{}' ORDER BY public_time DESC LIMIT {} OFFSET {};"""
+SELECT_ALL = """SELECT id, type, title, url, public_time FROM current_event ORDER BY create_time DESC LIMIT {} OFFSET {};"""
+SELECT_BY = """SELECT id, type, title, url, public_time FROM current_event WHERE type = '{}' ORDER BY create_time DESC LIMIT {} OFFSET {};"""
 COUNT_ALL = """SELECT COUNT(1) FROM current_event;"""
 COUNT_BY = """SELECT COUNT(1) FROM current_event WHERE type = '{}';"""
+DELETE_DATA = """DELETE FROM current_event WHERE id = '{}';"""
 
 def create_table(cursor):
     cursor.execute(CREATE_TEBLE)
@@ -44,6 +45,13 @@ def query_data(cursor, data):
 def insert_data(cursor, con, data):
     try:
         cursor.execute(INSERT_INTO.format(count_md5(data['url']), data['type'], data['title'], data['url'], data['public_time'], data['create_time']))
+        con.commit()
+    except:
+        raise
+
+def delete_data(cursor, con, event_id):
+    try:
+        cursor.execute(DELETE_DATA.format(event_id))
         con.commit()
     except:
         raise

@@ -37,6 +37,9 @@
                 </div>
                 <div class="direction-r">
                     <div class="desc" title="{{ s[3] }}">{{ s[2] }}</div>
+                    {% if auth == admin %}
+                        <button class="del" onclick="del_title('{{ s[0] }}')">删除</button>
+                    {% endif %}
                 </div>
             </li>
             {% endfor %}
@@ -58,7 +61,8 @@
 	</body>
     <script type="text/javascript">
         let timeline_desc = document.getElementsByClassName('desc');for(let i=0; i<timeline_desc.length; i++) {timeline_desc[i].onclick = function () {window.location.href = timeline_desc[i].title;}}
-        document.getElementById('type').onchange = function () {let types = document.getElementById('type').value;if (types) {window.location.href = '{{ context }}?type=' + types;} else {window.location.href = '{{ context }}';}}
-        function to_page(page, plus) {page = page * 1 + plus;let types = document.getElementById('type').value;if (types) {window.location.href = '{{ context }}?type=' + types + '&page=' + page;} else {window.location.href = '{{ context }}?page=' + page;}}
+        document.getElementById('type').onchange = function () {let URL = '{{ context }}?';let types = document.getElementById('type').value;if (types) {URL = URL + 'type=' + types + '&';} if ('{{ auth }}' === '{{ admin }}') {URL = URL + 'auth={{ auth }}';} else {URL = URL.substr(0, URL.length - 1);} window.location.href = URL;}
+        function to_page(page, plus) {page = page * 1 + plus;let URL = '{{ context }}?page=' + page + '&';let types = document.getElementById('type').value;if (types) {URL = URL + 'type=' + types + '&';} if ('{{ auth }}' === '{{ admin }}') {URL = URL + 'auth={{ auth }}';} else {URL = URL.substr(0, URL.length - 1);} window.location.href = URL;}
+        function del_title(event_id) {let URL = window.location.href;if (URL.indexOf('method') > 0) {URL = URL.split('&method')[0];} URL = URL + '&method=del&id=' + event_id;window.location.href = URL;}
     </script>
 </html>

@@ -45,6 +45,7 @@ def get_ren_min(cursor, con, data):
                 logger.error(f"写入失败，{data_in}")
                 logger.error(traceback.format_exc())
                 break
+            time.sleep(1)
     except:
         logger.error(traceback.format_exc())
 
@@ -74,6 +75,7 @@ def get_ban_yue_tan(cursor, con, data):
                 logger.error(f"写入失败，{data_in}")
                 logger.error(traceback.format_exc())
                 break
+            time.sleep(1)
     except:
         logger.error(traceback.format_exc())
 
@@ -94,6 +96,8 @@ def get_hu_bei_ri_bao(cursor, con, data):
                 a = rr.select("a")
                 href = "https://epaper.hubeidaily.net/pc/" + a[0].attrs['href'].replace("../","")
                 title = a[0].text.strip()
+                if "广告" in title:
+                    continue
                 public_time = time.strftime("%Y-%m-%d")
                 data_in = {"title": title, "url": href, "public_time": public_time, "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
                 try:
@@ -106,6 +110,7 @@ def get_hu_bei_ri_bao(cursor, con, data):
                     logger.error(f"写入失败，{data_in}")
                     logger.error(traceback.format_exc())
                     break
+                time.sleep(1)
     except:
         logger.error(traceback.format_exc())
 

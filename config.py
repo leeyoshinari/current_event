@@ -4,6 +4,7 @@
 ip = "127.0.0.1"
 port = "5678"
 serverContext = "/cn"
+admin = "admin"
 urls = {
     "ren_min_ri_bao": [
         {"type": "ren_min_shi_ping", "selector": ".t11", "desc": "人民时评", "url": "http://opinion.people.com.cn/GB/8213/353915/353916/index.html"},

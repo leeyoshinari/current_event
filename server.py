@@ -10,9 +10,9 @@ import pymysql
 from aiohttp import web
 import aiohttp_jinja2
 from logger import logger
-from dataBase import query_data, create_table
+from dataBase import query_data, create_table, delete_data
 from spider import run_spider
-from config import serverContext, ip, port, selector
+from config import serverContext, ip, port, selector, admin
 
 con = pymysql.connect(host='127.0.0.1', user='root', port=3306, password='123456', database='test', autocommit=True)
 cursor = con.cursor()
@@ -21,14 +21,20 @@ create_table(cursor)
 async def home(request):
     host = request.headers.get('X-Real-IP')
     user_agent = request.headers.get('User-Agent')
+    method = request.query.get('method')
+    if method == 'del':
+        event_id = request.query.get('id')
+        delete_data(cursor, con, event_id)
+        logger.info(f'删除 {event_id} 成功：{host} - {user_agent}')
     types = request.query.get('type')
     page = request.query.get('page')
+    auth = request.query.get('auth')
     page = int(page) if page else 1
     data = {'type': types, 'page': page, 'page_size': 15}
     results, total_page = query_data(cursor, data)
     logger.info(f'{host} - {user_agent}')
     return aiohttp_jinja2.render_template('index.html', request, context={'context': serverContext, 'total': total_page,
-           'results': results, 'type': types, "selector": selector, 'page': page})
+           'results': results, 'type': types, "selector": selector, 'page': page, 'auth': auth, 'admin': admin})
 
 
 async def main():
