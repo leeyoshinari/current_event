@@ -3,6 +3,7 @@
 # Author: leeyoshinari
 import re
 import time
+import datetime
 import traceback
 import requests
 from bs4 import BeautifulSoup
@@ -98,8 +99,7 @@ def get_hu_bei_ri_bao(cursor, con, data):
                 title = a[0].text.strip()
                 if "广告" in title:
                     continue
-                public_time = time.strftime("%Y-%m-%d")
-                data_in = {"title": title, "url": href, "public_time": public_time, "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
+                data_in = {"title": title, "url": href, "public_time": time.strftime("%Y-%m-%d"), "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
                 try:
                     insert_data(cursor, con, data_in)
                     logger.info(f"写入成功，{data_in}")
@@ -114,6 +114,40 @@ def get_hu_bei_ri_bao(cursor, con, data):
     except:
         logger.error(traceback.format_exc())
 
+def get_ke_pu_shi_bao(cursor, con, data):
+    try:
+        if datetime.datetime.now().weekday() == 4:
+            res = requests.get(data['url'].format(time.strftime("%Y-%m/%d"), 'node_121.htm'), headers=header)
+            res.encoding = res.apparent_encoding
+            soup = BeautifulSoup(res.text, features="lxml")
+            selector = soup.select(data['selector'])
+            rows = selector[0].select("#pageLink")
+            for r in rows:
+                href = r.attrs['href']
+                res = requests.get(data['url'].format(time.strftime("%Y-%m/%d"), href), headers=header)
+                res.encoding = res.apparent_encoding
+                soup = BeautifulSoup(res.text, features="lxml")
+                selector = soup.select(".title")
+                titles = selector[0].select("li")
+                for ti in titles:
+                    a = ti.select("a")[0]
+                    href = 'http://digitalpaper.stdaily.com/http_www.kjrb.com/kjwzb/html/{}/{}'.format(time.strftime("%Y-%m/%d"), a.attrs['href'])
+                    title = a.select('div')[0].text.strip()
+                    data_in = {"title": title, "url": href, "public_time": time.strftime("%Y-%m-%d"),
+                               "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
+                    try:
+                        insert_data(cursor, con, data_in)
+                        logger.info(f"写入成功，{data_in}")
+                    except IntegrityError:
+                        logger.warning(f"重复数据，{data_in}")
+                        break
+                    except:
+                        logger.error(f"写入失败，{data_in}")
+                        logger.error(traceback.format_exc())
+                        break
+                    time.sleep(1)
+    except:
+        logger.error(traceback.format_exc())
 
 def run_spider(cursor, con):
     while True:
@@ -128,6 +162,9 @@ def run_spider(cursor, con):
                 if k == "hu_bei_ri_bao":
                     for d in v:
                         get_hu_bei_ri_bao(cursor, con, d)
+                if k == "ke_pu_shi_bao":
+                    for d in v:
+                        get_ke_pu_shi_bao(cursor, con, d)
         time.sleep(30)
 
 if __name__ == "__main__":

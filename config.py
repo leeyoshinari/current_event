@@ -18,6 +18,9 @@ urls = {
     ],
     "hu_bei_ri_bao": [
         {"type": "hu_bei_ri_bao", "selector": ".nav-list", "desc": "湖北日报", "url": "https://epaper.hubeidaily.net/pc/column/{}/{}"}
+    ],
+    "ke_pu_shi_bao": [
+        {"type": "ke_pu_shi_bao", "selector": ".bmname", "desc": "科普时报", "url": "http://digitalpaper.stdaily.com/http_www.kjrb.com/kjwzb/html/{}/{}"}
     ]
 }
 
@@ -27,5 +30,6 @@ selector = {"ren_min_shi_ping": "人民日报-人民时评",
             "ren_min_zhong_heng": "人民日报-人民纵横",
             "ban_yue_tan_ping_lun": "半月谈-评论",
             "ban_yue_tan_jin_ri_tan": "半月谈-今日谈",
-            "hu_bei_ri_bao": "湖北日报"
+            "hu_bei_ri_bao": "湖北日报",
+            "ke_pu_shi_bao":"科普时报"
             }
