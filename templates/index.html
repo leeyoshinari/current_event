@@ -6,7 +6,7 @@
 	</head>
 	<body>
         <div>
-            <select id="type" style="width: 200px; height: 35px;">
+            <select id="type" style="width: 200px; height: 35px; border: solid;">
                 {% if type %}
                     <option value="">所有</option>
                 {% else %}
@@ -55,7 +55,7 @@
                     <button class="paging" style="margin-right: 20%; margin-left: 1%;" onclick="to_page('{{ page }}', -1)"><< 上一页</button>
                 {% endif %}
             {% endif %}
-            <div style="float: right; margin-top: 6px;"><span>总共 {{ total }} 条，当前是第 {{ page }} 页</span></div>
+            <div style="float: right; margin-top: 6px;"><span>总共 {{ total }} 条，当前是第 {{ page }}/{{ total_page }} 页</span></div>
         </div>
         <div style="height: 96px;"></div>
 	</body>

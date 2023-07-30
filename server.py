@@ -4,10 +4,10 @@
 
 import os
 import asyncio
-import threading
 import jinja2
 import pymysql
 from aiohttp import web
+from apscheduler.schedulers.background import BackgroundScheduler
 import aiohttp_jinja2
 from logger import logger
 from dataBase import query_data, create_table, delete_data
@@ -34,7 +34,8 @@ async def home(request):
     results, total_page = query_data(cursor, data)
     logger.info(f'{host} - {user_agent}')
     return aiohttp_jinja2.render_template('index.html', request, context={'context': serverContext, 'total': total_page,
-           'results': results, 'type': types, "selector": selector, 'page': page, 'auth': auth, 'admin': admin})
+           'results': results, 'type': types, "selector": selector, 'page': page, 'auth': auth, 'admin': admin,
+            'total_page': (total_page + 14) // 15})
 
 
 async def main():
@@ -51,8 +52,9 @@ async def main():
     await site.start()
 
 
-t = threading.Thread(target=run_spider, args=(cursor, con, ), daemon=True)
-t.start()
+scheduler = BackgroundScheduler()
+scheduler.add_job(run_spider, trigger='cron', args=(cursor, con, ), hour='07-22', id='job-1')
+scheduler.start()
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
 loop.run_forever()

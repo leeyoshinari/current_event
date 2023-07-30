@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Author: leeyoshinari
-import re
 import time
 import datetime
 import traceback
@@ -19,34 +18,25 @@ def get_ren_min(cursor, con, data):
         res = requests.get(data['url'], headers = header)
         res.encoding = res.apparent_encoding
         soup = BeautifulSoup(res.text, features="lxml")
-        t11 = soup.select(data['selector'])
-        if data['type'] == 'ren_min_lun_tan':
-            rows = t11[0].select("a")[1:]
-            public_times = re.findall("(\d+年\d+月\d+)日", t11[0].text.replace('\n', ''))
-        else:
-            public_times = re.findall("(\d+月\d+)日", t11[0].text.replace('\n', ''))
-            rows = t11[0].select("a")
-        year = time.strftime("%Y-")
-        for r, t in zip(rows, public_times):
+        t11 = soup.select(data['selector'])[0]
+        rows = t11.select("li")
+        for row in rows:
+            r = row.select("a")[0]
             href = 'http://opinion.people.com.cn/' + r.attrs['href']
             title = r.text
-            public_time = t.replace(title, '').strip()
-            if data['type'] == 'ren_min_lun_tan':
-                public_time = public_time.replace('年', '-').replace('月', '-')
-            else:
-                public_time = year + public_time.replace('月', '-')
-            data_in = {"title": title, "url": href, "public_time": public_time, "type": data['type'], "create_time": time.strftime("%Y-%m-%d %H:%M:%S")}
+            public_time = row.select("i")[0].text.replace(title, '').strip() + ":00"
+            data_in = {"title": title, "url": href, "public_time": public_time.split(' ')[0], "type": data['type'], "create_time": public_time}
             try:
                 insert_data(cursor, con, data_in)
                 logger.info(f"写入成功，{data_in}")
             except IntegrityError:
                 logger.warning(f"重复数据，{data_in}")
-                break
+                continue
             except:
                 logger.error(f"写入失败，{data_in}")
                 logger.error(traceback.format_exc())
-                break
-            time.sleep(1)
+                continue
+            time.sleep(0.5)
     except:
         logger.error(traceback.format_exc())
 
@@ -150,22 +140,19 @@ def get_ke_pu_shi_bao(cursor, con, data):
         logger.error(traceback.format_exc())
 
 def run_spider(cursor, con):
-    while True:
-        if time.strftime("%M") == "20":
-            for k, v in urls.items():
-                if k == "ren_min_ri_bao":
-                    for d in v:
-                        get_ren_min(cursor, con, d)
-                if k == "ban_yue_tan":
-                    for d in v:
-                        get_ban_yue_tan(cursor, con, d)
-                if k == "hu_bei_ri_bao":
-                    for d in v:
-                        get_hu_bei_ri_bao(cursor, con, d)
-                if k == "ke_pu_shi_bao":
-                    for d in v:
-                        get_ke_pu_shi_bao(cursor, con, d)
-        time.sleep(30)
+    for k, v in urls.items():
+        if k == "ren_min_ri_bao":
+            for d in v:
+                get_ren_min(cursor, con, d)
+        if k == "ban_yue_tan":
+            for d in v:
+                get_ban_yue_tan(cursor, con, d)
+        if k == "hu_bei_ri_bao":
+            for d in v:
+                get_hu_bei_ri_bao(cursor, con, d)
+        if k == "ke_pu_shi_bao":
+            for d in v:
+                get_ke_pu_shi_bao(cursor, con, d)
 
 if __name__ == "__main__":
     pass
