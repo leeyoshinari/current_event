@@ -53,7 +53,7 @@ async def main():
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(run_spider, trigger='cron', args=(cursor, con, ), hour='07-22', id='job-1')
+scheduler.add_job(run_spider, trigger='interval', args=(cursor, con, ), hours=1, id='job-1')
 scheduler.start()
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
