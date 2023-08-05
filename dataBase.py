@@ -11,17 +11,19 @@ CREATE TABLE IF NOT EXISTS `current_event` (
     `url` VARCHAR(256) NOT NULL,
     `public_time` DATETIME NOT NULL,
     `create_time` DATETIME,
+    `is_valid` INT DEFAULT 1,
     PRIMARY KEY (`id`),
     INDEX (`public_time`)
 );
 """
 
 INSERT_INTO = """INSERT INTO current_event (id, type, title, url, public_time, create_time) VALUES ('{}', '{}', '{}', '{}', '{}', '{}');"""
-SELECT_ALL = """SELECT id, type, title, url, public_time FROM current_event ORDER BY create_time DESC LIMIT {} OFFSET {};"""
-SELECT_BY = """SELECT id, type, title, url, public_time FROM current_event WHERE type = '{}' ORDER BY create_time DESC LIMIT {} OFFSET {};"""
-COUNT_ALL = """SELECT COUNT(1) FROM current_event;"""
-COUNT_BY = """SELECT COUNT(1) FROM current_event WHERE type = '{}';"""
+SELECT_ALL = """SELECT id, type, title, url, public_time FROM current_event WHERE is_valid = 1 ORDER BY create_time DESC LIMIT {} OFFSET {};"""
+SELECT_BY = """SELECT id, type, title, url, public_time FROM current_event WHERE is_valid = 1 AND type = '{}' ORDER BY create_time DESC LIMIT {} OFFSET {};"""
+COUNT_ALL = """SELECT COUNT(1) FROM current_event WHERE is_valid = 1;"""
+COUNT_BY = """SELECT COUNT(1) FROM current_event WHERE is_valid = 1 AND type = '{}';"""
 DELETE_DATA = """DELETE FROM current_event WHERE id = '{}';"""
+DELETE_DATA_1 = """UPDATE current_event SET is_valid = 0 WHERE id = '{}';"""
 
 def create_table(cursor):
     cursor.execute(CREATE_TEBLE)
@@ -51,7 +53,7 @@ def insert_data(cursor, con, data):
 
 def delete_data(cursor, con, event_id):
     try:
-        cursor.execute(DELETE_DATA.format(event_id))
+        cursor.execute(DELETE_DATA_1.format(event_id))
         con.commit()
     except:
         raise
