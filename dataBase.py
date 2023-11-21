@@ -15,7 +15,7 @@ CREATE_TEBLE = """
     );
 """
 
-CREATE_INDEX = """CREATE INDEX public_time_index ON current_event (public_time);"""
+CREATE_INDEX = """CREATE INDEX IF NOT EXISTS public_time_index ON current_event (public_time);"""
 INSERT_INTO = """INSERT INTO current_event (id, type, title, url, public_time, create_time) VALUES ('{}', '{}', '{}', '{}', '{}', '{}');"""
 SELECT_ALL = """SELECT id, type, title, url, public_time FROM current_event WHERE is_valid = 1 ORDER BY create_time DESC LIMIT {} OFFSET {};"""
 SELECT_BY = """SELECT id, type, title, url, public_time FROM current_event WHERE is_valid = 1 AND type = '{}' ORDER BY create_time DESC LIMIT {} OFFSET {};"""
