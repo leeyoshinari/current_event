@@ -144,6 +144,7 @@ venv.bak/
 dmypy.json
 index.css.backup
 test.py
+sqlite3.db
 
 # Pyre type checker
 .pyre/

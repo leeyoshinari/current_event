@@ -3,7 +3,7 @@
 # Author: leeyoshinari
 
 import logging
-import pymysql
+import sqlite3
 from apscheduler.schedulers.background import BackgroundScheduler
 import uvicorn
 from fastapi import FastAPI, APIRouter, Request
@@ -16,9 +16,9 @@ from config import serverContext, ip, port, selector, admin
 
 
 logger = logging.getLogger("uvicorn")
-con = pymysql.connect(host='127.0.0.1', user='root', port=3306, password='123456', database='test', autocommit=True)
+con = sqlite3.connect('sqlite3.db')
 cursor = con.cursor()
-create_table(cursor)
+create_table(cursor, con)
 app = FastAPI()
 router = APIRouter(prefix=serverContext)
 
@@ -44,7 +44,7 @@ async def home(request: Request, page: int = 1, types: str = None, auth: str = N
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(run_spider, trigger='interval', args=(cursor, con, ), hours=1, id='job-1')
+    scheduler.add_job(run_spider, trigger='interval', args=(cursor, con, ), hours=10, id='job-1')
     scheduler.start()
     app.include_router(router)
     uvicorn.run(app=app, host=ip, port=int(port), log_config=LOGGING)
