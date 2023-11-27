@@ -44,7 +44,7 @@ async def home(request: Request, page: int = 1, types: str = None, auth: str = N
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(run_spider, trigger='interval', args=(cursor, con, ), hours=10, id='job-1')
+    scheduler.add_job(run_spider, trigger='interval', args=(), hours=10, id='job-1')
     scheduler.start()
     app.include_router(router)
     uvicorn.run(app=app, host=ip, port=int(port), log_config=LOGGING)

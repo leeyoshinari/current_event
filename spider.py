@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author: leeyoshinari
 import time
+import sqlite3
 import logging
 import datetime
 import traceback
@@ -146,7 +147,9 @@ def get_ke_pu_shi_bao(cursor, con, data):
         logger.error(traceback.format_exc())
 
 
-def run_spider(cursor, con):
+def run_spider():
+    con = sqlite3.connect('sqlite3.db')
+    cursor = con.cursor()
     for k, v in urls.items():
         if k == "ren_min_ri_bao":
             for d in v:
@@ -163,7 +166,5 @@ def run_spider(cursor, con):
 
 
 if __name__ == "__main__":
-    import sqlite3
-    con = sqlite3.connect('sqlite3.db')
-    cursor = con.cursor()
-    get_ren_min(cursor, con, {"type": "ren_min_ri_bao", "selector": ".list_14", "desc": "人民网评", "url": "http://opinion.people.com.cn/GB/223228/index.html"})
+    pass
+    # get_ren_min({"type": "ren_min_ri_bao", "selector": ".list_14", "desc": "人民网评", "url": "http://opinion.people.com.cn/GB/223228/index.html"})
