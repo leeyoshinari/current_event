@@ -163,6 +163,8 @@ def run_spider():
         if k == "ke_pu_shi_bao":
             for d in v:
                 get_ke_pu_shi_bao(cursor, con, d)
+    cursor.close()
+    con.close()
 
 
 if __name__ == "__main__":
